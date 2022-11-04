@@ -1,6 +1,8 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+
+import 'animations/graph_painter.dart';
 // import 'package:flutter/rendering.dart';
 
 void main() {
@@ -29,12 +31,11 @@ class Home extends StatelessWidget {
     <TweenSequenceItem<double>>[
       TweenSequenceItem<double>(
         tween: Tween<double>(begin: 0, end: 0.22)
-            // .chain(CurveTween(curve: Curves.easeOut)),
             .chain(CurveTween(curve: Curves.linear)),
         weight: 370.0,
       ),
       TweenSequenceItem<double>(
-        tween: Tween<double>(begin: 0.22, end: 0.311)
+        tween: Tween<double>(begin: 0.22, end: 0.307)
             .chain(CurveTween(curve: Curves.linear)),
         weight: 800,
       ),
@@ -44,22 +45,37 @@ class Home extends StatelessWidget {
   static final tweenSequence2 = TweenSequence(
     <TweenSequenceItem<double>>[
       TweenSequenceItem<double>(
-        tween: Tween<double>(begin: 0, end: 0.52)
-            // .chain(CurveTween(curve: Curves.easeOut)),
+        tween: Tween<double>(begin: 0, end: 0.055)
             .chain(CurveTween(curve: Curves.linear)),
-        weight: 370.0,
+        weight: 3970.0,
       ),
       TweenSequenceItem<double>(
-        tween: Tween<double>(begin: 0.52, end: 0.311)
+        tween: Tween<double>(begin: 0.055, end: 0.211)
             .chain(CurveTween(curve: Curves.linear)),
         weight: 800,
       ),
     ],
   );
 
-  static final Tween<double> chainTween = Tween<double>(begin: 0, end: 2);
-  static final constantTween = ConstantTween<double>(1.0);
-  static const Curve sawToothCurve = SawTooth(7);
+  static final tweenSequence3 = TweenSequence(
+    <TweenSequenceItem<double>>[
+      TweenSequenceItem<double>(
+        tween: Tween<double>(begin: 0, end: -0.1)
+            .chain(CurveTween(curve: Curves.linear)),
+        weight: 0.01,
+      ),
+      TweenSequenceItem<double>(
+        tween: Tween<double>(begin: -0.32, end: -0.515)
+            .chain(CurveTween(curve: Curves.easeOutCirc)),
+        weight: 0.9,
+      ),
+      TweenSequenceItem<double>(
+        tween: Tween<double>(begin: -0.515, end: -0.515)
+            .chain(CurveTween(curve: Curves.linear)),
+        weight: 10.0,
+      ),
+    ],
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -69,11 +85,8 @@ class Home extends StatelessWidget {
           AnimationAndCurveDemo(
             lable: 'Custom Curve: Springy',
             mainCurve: tweenSequence,
-            kindOfAnim: KindOfAnimation.reverse,
-          ),
-          AnimationAndCurveDemo(
-            lable: 'Custom Curve: Springy',
-            mainCurve: tweenSequence,
+            mainCurve2: tweenSequence2,
+            mainCurve3: tweenSequence3,
             kindOfAnim: KindOfAnimation.reverse,
           ),
         ]),
@@ -82,61 +95,10 @@ class Home extends StatelessWidget {
   }
 }
 
-class CustomTweenExample extends Tween<double> {
-  CustomTweenExample({
-    required double begin,
-    required double end,
-  }) : super(begin: begin, end: end);
-
-  @override
-  double lerp(double t) {
-    // return super.lerp((sin((t - delay) * 2 * pi) + 1) / 2);
-    final middle = (end! - begin!) / 2;
-    if (t < 0.2) {
-      return super.lerp(begin!);
-    } else if (t < 0.4) {
-      return super.lerp(middle);
-    } else if (t < 0.6) {
-      return super.lerp(end!);
-    } else if (t < 0.8) {
-      return super.lerp(middle);
-    }
-    return super.lerp(end!);
-  }
-}
-
-// class SineCurve extends Curve {
-//   const SineCurve({this.count = 3});
-
-//   final double count;
-
-//   // t = x
-//   @override
-//   double transformInternal(double t) {
-//     var val = sin(count * 2 * pi * t) * 0.5 + 0.5 + 0.5;
-//     // var val = sin(2 * pi * t);
-//     return val; //f(x)
-//   }
-// }
-
-class SpringCurve extends Curve {
-  const SpringCurve({
-    this.a = 0.29,
-    this.w = 19.4,
-  });
-  final double a;
-  final double w;
-
-  @override
-  double transformInternal(double t) {
-    return -(pow(e, -t / a) * cos(t * w)) + 1;
-  }
-}
-
 enum KindOfAnimation {
   forward,
   repeat,
-  repeatAndreverse,
+  // repeatandReverse, //
   reverse,
 }
 
@@ -144,24 +106,26 @@ class AnimationAndCurveDemo extends StatefulWidget {
   const AnimationAndCurveDemo({
     Key? key,
     required this.mainCurve,
-    // required this.mainCurve2,
+    required this.mainCurve2,
+    required this.mainCurve3,
     this.compareCurve,
+    this.compareCurve3,
     this.lable = '',
     this.size = 290,
-    this.size2 = 400,
-    this.duration = const Duration(seconds: 3),
-    this.duration2 = const Duration(seconds: 3),
+    this.size3 = 185,
+    this.duration = const Duration(seconds: 6),
     this.kindOfAnim = KindOfAnimation.repeat,
   }) : super(key: key);
 
   final Animatable<double> mainCurve;
-  // final Animatable<double> mainCurve2;
+  final Animatable<double> mainCurve2;
+  final Animatable<double> mainCurve3;
   final Animatable<double>? compareCurve;
+  final Animatable<double>? compareCurve3;
   final String lable;
   final double size;
-  final double size2;
+  final double size3;
   final Duration duration;
-  final Duration duration2;
   final KindOfAnimation kindOfAnim;
 
   @override
@@ -170,20 +134,22 @@ class AnimationAndCurveDemo extends StatefulWidget {
 
 class _AnimationAndCurveDemoState extends State<AnimationAndCurveDemo>
     with SingleTickerProviderStateMixin {
-  late AnimationController _controller, _controller2;
-
+  late AnimationController _controller;
   Animatable<double> get _mainCurve => widget.mainCurve;
-  // Animatable<double> get _mainCurve2 => widget.mainCurve2;
+  Animatable<double> get _mainCurve2 => widget.mainCurve2;
+  Animatable<double> get _mainCurve3 => widget.mainCurve3;
   Animatable<double>? get _compareCurve => widget.compareCurve;
-  String get _label => widget.lable;
+  Animatable<double>? get _compareCurve3 => widget.compareCurve3;
   double get _size => widget.size;
-  double get _size2 => widget.size2;
+  double get _size3 => widget.size3;
   Duration get _duration => widget.duration;
-  Duration get _duration2 => widget.duration2;
-  KindOfAnimation get _kindOfAnim => widget.kindOfAnim;
 
   late Path _shadowPath;
+  late Path _shadowPath2;
+  late Path _shadowPath3;
+
   Path? _comparePath;
+  Path? _comparePath3;
 
   @override
   void initState() {
@@ -195,8 +161,14 @@ class _AnimationAndCurveDemoState extends State<AnimationAndCurveDemo>
     );
 
     _shadowPath = _buildGraph(_mainCurve);
+    _shadowPath2 = _buildGraph(_mainCurve2);
+    _shadowPath3 = _buildGraph3(_mainCurve3);
+
     if (_compareCurve != null) {
       _comparePath = _buildGraph(_compareCurve!);
+    }
+    if (_compareCurve3 != null) {
+      _comparePath3 = _buildGraph3(_compareCurve3!);
     }
     _playAnimation();
   }
@@ -207,6 +179,16 @@ class _AnimationAndCurveDemoState extends State<AnimationAndCurveDemo>
     for (var t = 0.0; t <= 1; t += 0.01) {
       val = -animatable.transform(t) * _size;
       path.lineTo(t * _size, val);
+    }
+    return path;
+  }
+
+  Path _buildGraph3(Animatable<double> animatable) {
+    var val = 0.0;
+    var path = Path();
+    for (var t = 0.0; t <= 1; t += 0.01) {
+      val = -animatable.transform(t) * _size3;
+      path.lineTo(t * _size3, val);
     }
     return path;
   }
@@ -225,6 +207,7 @@ class _AnimationAndCurveDemoState extends State<AnimationAndCurveDemo>
   Widget build(BuildContext context) {
     var intervalValue = 0.0;
     var followPath = Path();
+    var followPath3 = Path();
     double heightDevice = MediaQuery.of(context).size.height;
     double widthDevice = MediaQuery.of(context).size.width;
 
@@ -245,13 +228,54 @@ class _AnimationAndCurveDemoState extends State<AnimationAndCurveDemo>
               ),
             ),
             Positioned(
+              top: heightDevice * 0.21,
+              bottom: 0,
+              left: widthDevice * -0.87,
+              right: widthDevice * 0,
+              child: Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(108.0),
+                  child: Image(
+                    image: AssetImage("img/electric_pole.png"),
+                    fit: BoxFit.cover,
+                  ),
+                ),
+              ),
+            ),
+            Positioned(
+              top: heightDevice * 0.51,
+              bottom: 0,
+              left: widthDevice * 0,
+              right: widthDevice * 0,
+              child: Center(
+                child: Image(
+                  image: AssetImage("img/grass_fence.png"),
+                  fit: BoxFit.cover,
+                ),
+              ),
+            ),
+            Positioned(
+              top: heightDevice * 0.817,
+              bottom: 0,
+              left: widthDevice * 0,
+              right: widthDevice * 0,
+              child: Image(
+                image: AssetImage("img/floor.png"),
+                fit: BoxFit.cover,
+              ),
+            ),
+            Positioned(
+              // height: heightDevice * 0.2,
               top: heightDevice * 0.2,
               bottom: 95,
               left: widthDevice * 0,
               right: widthDevice * 0,
-              child: Image(
-                image: AssetImage("img/house_solar_roof.png"),
-                fit: BoxFit.cover,
+              child: Container(
+                height: heightDevice * 1.5,
+                child: Image(
+                  image: AssetImage("img/house_solar_roof.png"),
+                  fit: BoxFit.cover,
+                ),
               ),
             ),
             Positioned(
@@ -269,18 +293,42 @@ class _AnimationAndCurveDemoState extends State<AnimationAndCurveDemo>
                     child: AnimatedBuilder(
                       animation: _controller,
                       builder: (_, child) {
-                        if (intervalValue >= _controller.value) {
-                          followPath.reset();
-                        }
+                        // if (intervalValue >= _controller.value) {
+                        //   followPath.reset();
+                        // }
                         intervalValue = _controller.value;
+                        // followPath.reset();
 
                         final val = _mainCurve.evaluate(_controller);
-                        followPath.lineTo(
-                            _controller.value * _size, -val * _size);
+                        // followPath.lineTo(
+                        //     _controller.value * _size, -val * _size);
 
                         return CustomPaint(
                           painter: GraphPainter(
                             shadowPath: _shadowPath,
+                            followPath: followPath,
+                            comparePath: _comparePath,
+                            currentPoint: Offset(
+                              _controller.value * _size,
+                              val * _size,
+                            ),
+                            graphSize: _size,
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                  Container(
+                    child: AnimatedBuilder(
+                      animation: _controller,
+                      builder: (_, child) {
+                        final val = _mainCurve2.evaluate(_controller);
+                        // followPath.lineTo(
+                        //     _controller.value * _size, -val * _size);
+
+                        return CustomPaint(
+                          painter: GraphPainter(
+                            shadowPath: _shadowPath2,
                             followPath: followPath,
                             comparePath: _comparePath,
                             currentPoint: Offset(
@@ -297,10 +345,10 @@ class _AnimationAndCurveDemoState extends State<AnimationAndCurveDemo>
               ),
             ),
             Positioned(
-              top: heightDevice * -0.423,
-              bottom: 5,
-              left: widthDevice * 0.225,
-              right: widthDevice * -0.08,
+              top: heightDevice * -0.015,
+              bottom: 95,
+              left: widthDevice * -0.271,
+              right: widthDevice * 0,
               child: new ListView(
                 physics: NeverScrollableScrollPhysics(),
                 children: <Widget>[
@@ -311,22 +359,26 @@ class _AnimationAndCurveDemoState extends State<AnimationAndCurveDemo>
                     child: AnimatedBuilder(
                       animation: _controller,
                       builder: (_, child) {
-                        // intervalValue = _controller.value;
+                        intervalValue = _controller.value;
+                        // if (intervalValue >= _controller.value) {
+                        //   // followPath3.reset();
+                        // }
 
-                        final val = _mainCurve.evaluate(_controller);
-                        followPath.lineTo(
-                            _controller.value * _size, -val * _size);
+                        final val = _mainCurve3.evaluate(_controller);
+
+                        // followPath3.lineTo(
+                        //     _controller.value * _size3, -val * _size3);
 
                         return CustomPaint(
-                          painter: GraphPainter(
-                            shadowPath: _shadowPath,
-                            followPath: followPath,
+                          painter: GraphPainter3(
+                            shadowPath: _shadowPath3,
+                            followPath: followPath3,
                             comparePath: _comparePath,
                             currentPoint: Offset(
-                              _controller.value * _size,
-                              val * _size,
+                              _controller.value * _size3,
+                              val * _size3,
                             ),
-                            graphSize: _size,
+                            graphSize: _size3,
                           ),
                         );
                       },
@@ -339,61 +391,5 @@ class _AnimationAndCurveDemoState extends State<AnimationAndCurveDemo>
         ),
       ),
     );
-  }
-}
-
-//////////////////////////////////////////////////////////////////////
-class GraphPainter extends CustomPainter {
-  const GraphPainter({
-    required this.currentPoint,
-    required this.shadowPath,
-    required this.followPath,
-    this.comparePath,
-    required this.graphSize,
-  });
-
-  final Offset currentPoint;
-  final Path shadowPath;
-  final Path followPath;
-  final Path? comparePath;
-  final double graphSize;
-
-  static final backgroundPaint = Paint()
-    ..color = Color.fromARGB(255, 243, 239, 239);
-  static final currentPointPaint = Paint()
-    ..color = Color.fromARGB(255, 13, 125, 45);
-  static final shadowPaint = Paint()
-    ..color = Color.fromARGB(255, 10, 128, 118)
-    ..style = PaintingStyle.stroke
-    ..strokeWidth = 5;
-
-  static final followPaint = Paint()
-    ..color = Color.fromARGB(255, 3, 147, 149)
-    ..style = PaintingStyle.stroke
-    ..strokeWidth = 5;
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    _drawBackground(canvas, size);
-    canvas.translate(
-        size.width / 2 - graphSize / 2, size.height / 2 - graphSize / 2);
-
-    canvas.translate(0, graphSize);
-
-    canvas
-      ..drawPath(shadowPath, shadowPaint)
-      ..drawPath(followPath, followPaint)
-      ..drawCircle(
-          Offset(currentPoint.dx, -currentPoint.dy), 4, currentPointPaint);
-  }
-
-  void _drawBackground(Canvas canvas, Size size) {
-    canvas.drawRect(
-        Rect.fromLTWH(0, 0, size.width, size.height), backgroundPaint);
-  }
-
-  @override
-  bool shouldRepaint(CustomPainter oldDelegate) {
-    return true;
   }
 }
