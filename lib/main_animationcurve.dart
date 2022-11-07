@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 
 import 'animations/graph_painter.dart';
@@ -45,14 +43,19 @@ class Home extends StatelessWidget {
   static final tweenSequence2 = TweenSequence(
     <TweenSequenceItem<double>>[
       TweenSequenceItem<double>(
-        tween: Tween<double>(begin: 0, end: 0.055)
+        tween: Tween<double>(begin: 0, end: 0.0)
             .chain(CurveTween(curve: Curves.linear)),
-        weight: 3970.0,
+        weight: 0.01,
       ),
       TweenSequenceItem<double>(
-        tween: Tween<double>(begin: 0.055, end: 0.211)
+        tween: Tween<double>(begin: 0.0, end: 0.141)
             .chain(CurveTween(curve: Curves.linear)),
-        weight: 800,
+        weight: 900,
+      ),
+      TweenSequenceItem<double>(
+        tween: Tween<double>(begin: 0.141, end: 0.211)
+            .chain(CurveTween(curve: Curves.linear)),
+        weight: 4700,
       ),
     ],
   );
@@ -87,19 +90,12 @@ class Home extends StatelessWidget {
             mainCurve: tweenSequence,
             mainCurve2: tweenSequence2,
             mainCurve3: tweenSequence3,
-            kindOfAnim: KindOfAnimation.reverse,
+            // kindOfAnim: KindOfAnimation.reverse,
           ),
         ]),
       ),
     );
   }
-}
-
-enum KindOfAnimation {
-  forward,
-  repeat,
-  // repeatandReverse, //
-  reverse,
 }
 
 class AnimationAndCurveDemo extends StatefulWidget {
@@ -109,24 +105,26 @@ class AnimationAndCurveDemo extends StatefulWidget {
     required this.mainCurve2,
     required this.mainCurve3,
     this.compareCurve,
+    this.compareCurve2,
     this.compareCurve3,
     this.lable = '',
     this.size = 290,
     this.size3 = 185,
     this.duration = const Duration(seconds: 6),
-    this.kindOfAnim = KindOfAnimation.repeat,
+    // this.kindOfAnim = KindOfAnimation.repeat,
   }) : super(key: key);
 
   final Animatable<double> mainCurve;
   final Animatable<double> mainCurve2;
   final Animatable<double> mainCurve3;
   final Animatable<double>? compareCurve;
+  final Animatable<double>? compareCurve2;
   final Animatable<double>? compareCurve3;
   final String lable;
   final double size;
   final double size3;
   final Duration duration;
-  final KindOfAnimation kindOfAnim;
+  // final KindOfAnimation kindOfAnim;
 
   @override
   _AnimationAndCurveDemoState createState() => _AnimationAndCurveDemoState();
@@ -139,6 +137,7 @@ class _AnimationAndCurveDemoState extends State<AnimationAndCurveDemo>
   Animatable<double> get _mainCurve2 => widget.mainCurve2;
   Animatable<double> get _mainCurve3 => widget.mainCurve3;
   Animatable<double>? get _compareCurve => widget.compareCurve;
+  Animatable<double>? get _compareCurve2 => widget.compareCurve2;
   Animatable<double>? get _compareCurve3 => widget.compareCurve3;
   double get _size => widget.size;
   double get _size3 => widget.size3;
@@ -149,6 +148,7 @@ class _AnimationAndCurveDemoState extends State<AnimationAndCurveDemo>
   late Path _shadowPath3;
 
   Path? _comparePath;
+  Path? _comparePath2;
   Path? _comparePath3;
 
   @override
@@ -161,11 +161,14 @@ class _AnimationAndCurveDemoState extends State<AnimationAndCurveDemo>
     );
 
     _shadowPath = _buildGraph(_mainCurve);
-    _shadowPath2 = _buildGraph(_mainCurve2);
+    _shadowPath2 = _buildGraph2(_mainCurve2);
     _shadowPath3 = _buildGraph3(_mainCurve3);
 
     if (_compareCurve != null) {
       _comparePath = _buildGraph(_compareCurve!);
+    }
+    if (_compareCurve2 != null) {
+      _comparePath2 = _buildGraph2(_compareCurve2!);
     }
     if (_compareCurve3 != null) {
       _comparePath3 = _buildGraph3(_compareCurve3!);
@@ -179,6 +182,16 @@ class _AnimationAndCurveDemoState extends State<AnimationAndCurveDemo>
     for (var t = 0.0; t <= 1; t += 0.01) {
       val = -animatable.transform(t) * _size;
       path.lineTo(t * _size, val);
+    }
+    return path;
+  }
+
+  Path _buildGraph2(Animatable<double> animatable) {
+    var val = 0.0;
+    var path = Path();
+    for (var t = 0.0; t <= 1; t += 0.01) {
+      val = -animatable.transform(t) * -_size;
+      path.lineTo(t * -_size, val);
     }
     return path;
   }
@@ -200,11 +213,13 @@ class _AnimationAndCurveDemoState extends State<AnimationAndCurveDemo>
   @override
   void dispose() {
     _controller.dispose();
+
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    // ignore: unused_local_variable
     var intervalValue = 0.0;
     var followPath = Path();
     var followPath3 = Path();
@@ -265,7 +280,6 @@ class _AnimationAndCurveDemoState extends State<AnimationAndCurveDemo>
               ),
             ),
             Positioned(
-              // height: heightDevice * 0.2,
               top: heightDevice * 0.2,
               bottom: 95,
               left: widthDevice * 0,
@@ -298,11 +312,9 @@ class _AnimationAndCurveDemoState extends State<AnimationAndCurveDemo>
                         // }
                         intervalValue = _controller.value;
                         // followPath.reset();
-
                         final val = _mainCurve.evaluate(_controller);
                         // followPath.lineTo(
                         //     _controller.value * _size, -val * _size);
-
                         return CustomPaint(
                           painter: GraphPainter(
                             shadowPath: _shadowPath,
@@ -318,6 +330,20 @@ class _AnimationAndCurveDemoState extends State<AnimationAndCurveDemo>
                       },
                     ),
                   ),
+                ],
+              ),
+            ),
+            Positioned(
+              top: heightDevice * -0.193,
+              bottom: 5,
+              left: widthDevice * 1.385,
+              right: widthDevice * -0.08,
+              child: new ListView(
+                physics: NeverScrollableScrollPhysics(),
+                children: <Widget>[
+                  SizedBox(
+                    height: heightDevice / 2,
+                  ),
                   Container(
                     child: AnimatedBuilder(
                       animation: _controller,
@@ -325,15 +351,14 @@ class _AnimationAndCurveDemoState extends State<AnimationAndCurveDemo>
                         final val = _mainCurve2.evaluate(_controller);
                         // followPath.lineTo(
                         //     _controller.value * _size, -val * _size);
-
                         return CustomPaint(
                           painter: GraphPainter(
                             shadowPath: _shadowPath2,
                             followPath: followPath,
                             comparePath: _comparePath,
                             currentPoint: Offset(
-                              _controller.value * _size,
-                              val * _size,
+                              _controller.value * -_size,
+                              val * -_size,
                             ),
                             graphSize: _size,
                           ),
@@ -360,15 +385,12 @@ class _AnimationAndCurveDemoState extends State<AnimationAndCurveDemo>
                       animation: _controller,
                       builder: (_, child) {
                         intervalValue = _controller.value;
-                        // if (intervalValue >= _controller.value) {
-                        //   // followPath3.reset();
-                        // }
-
+                        if (intervalValue >= _controller.value) {
+                          followPath3.reset();
+                        }
                         final val = _mainCurve3.evaluate(_controller);
-
                         // followPath3.lineTo(
                         //     _controller.value * _size3, -val * _size3);
-
                         return CustomPaint(
                           painter: GraphPainter3(
                             shadowPath: _shadowPath3,

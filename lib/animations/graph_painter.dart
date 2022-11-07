@@ -41,7 +41,7 @@ class GraphPainter extends CustomPainter {
       ..drawPath(shadowPath, shadowPaint)
       ..drawPath(followPath, followPaint)
       ..drawCircle(
-          Offset(currentPoint.dx, -currentPoint.dy), 4, currentPointPaint);
+          Offset(currentPoint.dx, -currentPoint.dy), 4.5, currentPointPaint);
   }
 
   void _drawBackground(Canvas canvas, Size size) {
